@@ -1,3 +1,12 @@
+/// Apex-quality dropdown widgets for Flutter.
+///
+/// Exports:
+/// - `ApexDropdown<T>`: single-select dropdown with optional search
+/// - `ApexMultiDropdown<T>`: multi-select dropdown with optional search + chips/count
+/// - `ApexAsyncDropdown<T>`: async dropdown API (placeholder UI for now)
+// ignore: unnecessary_library_name
+library apex_dropdown;
+
 export 'src/models/cache_policy.dart';
 export 'src/models/chip_display.dart';
 export 'src/models/decoration.dart';

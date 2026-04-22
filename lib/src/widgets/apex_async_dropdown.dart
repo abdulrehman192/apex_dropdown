@@ -14,6 +14,10 @@ import '../models/decoration.dart';
 /// stability). A full implementation (debounce, caching, and overlay list)
 /// is planned.
 class ApexAsyncDropdown<T> extends StatelessWidget {
+  /// Creates an async/search dropdown.
+  ///
+  /// This widget currently renders a placeholder (disabled) field while the full
+  /// async overlay implementation is still in progress.
   const ApexAsyncDropdown({
     required this.itemLabel,
     required this.queryFn,
@@ -45,15 +49,21 @@ class ApexAsyncDropdown<T> extends StatelessWidget {
   final ValueChanged<T?> onChanged;
 
   final T? value;
+
+  /// Compares two values for equality (for model objects, compare by ID).
   final bool Function(T a, T b)? compareFn;
 
   final List<T> initialItems;
+
+  /// Delay between user input changes and calling [queryFn].
   final Duration debounce;
   final int minQueryLength;
   final int? maxResults;
 
   final String? hintText;
   final bool enabled;
+
+  /// Visual configuration for the closed field and overlay list.
   final ApexDropdownDecoration? decoration;
 
   final WidgetBuilder? loadingBuilder;

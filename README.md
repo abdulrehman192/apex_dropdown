@@ -22,7 +22,7 @@ Add the dependency to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  apex_dropdown: ^1.0.0
+  apex_dropdown: ^1.0.3
 ```
 
 ```bash
@@ -152,8 +152,8 @@ Pass via `decoration:` on `ApexDropdown` or `ApexDropdownFormField`. Unset color
 **Field (closed)**
 
 - `textStyle`, `hintStyle` — selected value and hint.
-- `padding` — inner padding of the closed field (default horizontal 10, vertical 8).
-- `fieldHeight` — optional fixed height; omit for intrinsic height from text + padding.
+- `padding` — inner padding of the closed field (default horizontal 10, vertical 6).
+- `fieldHeight` — fixed height for the closed field (default 46). Set to `null` for intrinsic height from text + padding.
 - `borderRadius`, `borderColor`, `focusedBorderColor`, `disabledBorderColor`, `fillColor`, `hoverColor`.
 
 **Overlay list**
@@ -313,4 +313,4 @@ By default, all dropdowns (single + multi, field + list items) use **font size 1
 - **Repository**: `https://github.com/yourusername/apex_dropdown`
 - **Issues**: `https://github.com/yourusername/apex_dropdown/issues`
 
-Replace the repository URLs with your real GitHub paths when you publish.
+Update these URLs to your real repository before publishing.

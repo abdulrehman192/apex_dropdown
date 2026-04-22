@@ -1,3 +1,8 @@
+## 1.0.3 - 2026-04-22
+
+- **UI**: Reduce default closed-field height from 48 → 46 (applies to dropdowns and form-field variants).
+- **Docs**: Improve public API documentation coverage (adds missing DartDoc for `apex_dropdown` exports and `ApexAsyncDropdown` members).
+
 ## 1.0.0
 
 Initial release of `apex_dropdown`.

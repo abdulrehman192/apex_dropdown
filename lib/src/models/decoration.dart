@@ -25,8 +25,8 @@ class ApexDropdownDecoration {
     this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
     /// Fixed height for the closed field.
     ///
-    /// Defaults to 48 to match common Material input sizing.
-    this.fieldHeight = 48,
+    /// Defaults to 46 to match compact Material input sizing.
+    this.fieldHeight = 46,
     /// Text style for each row label in the overlay list (defaults from theme).
     this.itemTextStyle,
     /// Horizontal and vertical padding for overlay list rows.
