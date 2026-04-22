@@ -22,7 +22,7 @@ Add the dependency to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  apex_dropdown: ^1.0.4
+  apex_dropdown: ^1.0.5
 ```
 
 ```bash
@@ -68,7 +68,7 @@ Main constructor parameters:
 | Parameter | Description |
 |-----------|-------------|
 | `items` | List of options. |
-| `itemLabel` | String shown in the field and in each row (unless `itemBuilder` is used). |
+| `itemLabel` | Optional string mapper for the field + rows. If omitted, defaults to `toString()` (recommended to override `toString()` on models). |
 | `onChanged` | Called with the new value (or `null` if you clear selection in a custom flow). |
 | `value` | Currently selected item; can be a different instance than the one in `items` if `compareFn` matches. |
 | `compareFn` | `(a, b) => true` when the same logical item; defaults to `==`. **Use for models** (e.g. `(a, b) => a.id == b.id`). |
@@ -93,6 +93,9 @@ class Car {
   Car({required this.id, required this.name});
   final int id;
   final String name;
+
+  @override
+  String toString() => name;
 }
 
 Car? selected;
@@ -100,7 +103,6 @@ Car? selected;
 ApexDropdown<Car>(
   items: cars,
   value: selected,
-  itemLabel: (c) => c.name,
   compareFn: (a, b) => a.id == b.id,
   hintText: 'Select a car',
   onChanged: (c) => setState(() => selected = c),
@@ -237,7 +239,7 @@ Multi-select uses the same overlay stack, placement, and search as `ApexDropdown
 | `items` | Options shown in the overlay. |
 | `values` | Current selection (any order). |
 | `onChanged` | Called with the updated list after toggle or chip delete. |
-| `itemLabel` | Label for each value in chips and list rows. |
+| `itemLabel` | Optional string mapper for chips and rows. If omitted, defaults to `toString()`. |
 | `compareFn` | Same as single-select; use for model identity. |
 | `maxSelection` | Optional cap; further adds invoke `onSelectionLimitReached` and do not change the list. |
 | `onSelectionLimitReached` | Called when the user tries to exceed `maxSelection`. |

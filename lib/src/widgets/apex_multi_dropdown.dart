@@ -15,7 +15,7 @@ class ApexMultiDropdown<T> extends StatefulWidget {
     required this.items,
     required this.values,
     required this.onChanged,
-    required this.itemLabel,
+    this.itemLabel,
     this.compareFn,
     this.maxSelection,
     this.onSelectionLimitReached,
@@ -38,7 +38,11 @@ class ApexMultiDropdown<T> extends StatefulWidget {
   final List<T> items;
   final List<T> values;
   final ValueChanged<List<T>> onChanged;
-  final String Function(T) itemLabel;
+  /// Converts an item to the string shown in chips/count and in the overlay.
+  ///
+  /// If omitted, the widget falls back to `item.toString()` (and uses an empty
+  /// string for `null` items).
+  final String Function(T)? itemLabel;
 
   final bool Function(T a, T b)? compareFn;
   final int? maxSelection;
@@ -216,8 +220,9 @@ class _ApexMultiDropdownState<T> extends State<ApexMultiDropdown<T>> {
   }
 
   String _safeItemLabel(T item) {
+    if (item == null) return '';
     try {
-      return widget.itemLabel(item);
+      return (widget.itemLabel ?? (i) => i.toString())(item);
     } catch (e) {
       apexDebugLog('itemLabel threw: $e');
       return item.toString();

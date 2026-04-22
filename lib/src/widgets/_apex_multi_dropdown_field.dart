@@ -7,7 +7,7 @@ class ApexMultiDropdownField<T> extends StatelessWidget {
   const ApexMultiDropdownField({
     required this.link,
     required this.displayValues,
-    required this.itemLabel,
+    this.itemLabel,
     required this.chipDisplay,
     required this.hintText,
     required this.enabled,
@@ -21,7 +21,7 @@ class ApexMultiDropdownField<T> extends StatelessWidget {
 
   final LayerLink link;
   final List<T> displayValues;
-  final String Function(T) itemLabel;
+  final String Function(T)? itemLabel;
   final ApexDropdownChipDisplay chipDisplay;
   final String? hintText;
   final bool enabled;
@@ -32,8 +32,9 @@ class ApexMultiDropdownField<T> extends StatelessWidget {
   final Key? containerKey;
 
   String _label(T item) {
+    if (item == null) return '';
     try {
-      return itemLabel(item);
+      return (itemLabel ?? (i) => i.toString())(item);
     } catch (_) {
       return item.toString();
     }

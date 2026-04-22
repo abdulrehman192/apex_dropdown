@@ -13,7 +13,7 @@ class ApexMultiDropdownFormField<T> extends FormField<List<T>> {
     required List<T> items,
     required List<T> values,
     required ValueChanged<List<T>> onChanged,
-    required String Function(T) itemLabel,
+    String Function(T)? itemLabel,
     bool Function(T a, T b)? compareFn,
     int? maxSelection,
     VoidCallback? onSelectionLimitReached,

@@ -10,7 +10,7 @@ import '_merge_form_field_decoration.dart';
 class ApexDropdownFormField<T> extends FormField<T> {
   ApexDropdownFormField({
     required List<T> items,
-    required String Function(T) itemLabel,
+    String Function(T)? itemLabel,
     required ValueChanged<T?> onChanged,
     T? value,
     bool Function(T a, T b)? compareFn,

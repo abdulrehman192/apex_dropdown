@@ -13,8 +13,8 @@ import '_apex_dropdown_overlay.dart';
 class ApexDropdown<T> extends StatefulWidget {
   const ApexDropdown({
     required this.items,
-    required this.itemLabel,
     required this.onChanged,
+    this.itemLabel,
     this.value,
     this.compareFn,
     this.hintText,
@@ -32,7 +32,11 @@ class ApexDropdown<T> extends StatefulWidget {
   });
 
   final List<T> items;
-  final String Function(T) itemLabel;
+  /// Converts an item to the string shown in the closed field and overlay.
+  ///
+  /// If omitted, the widget falls back to `item.toString()` (and uses an empty
+  /// string for `null` items).
+  final String Function(T) ? itemLabel;
   final ValueChanged<T?> onChanged;
 
   final T? value;
@@ -146,8 +150,9 @@ class _ApexDropdownState<T> extends State<ApexDropdown<T>> {
   }
 
   String _safeItemLabel(T item) {
+    if (item == null) return '';
     try {
-      return widget.itemLabel(item);
+      return (widget.itemLabel ?? (i) => i.toString())(item);
     } catch (e) {
       apexDebugLog('itemLabel threw: $e');
       return item.toString();

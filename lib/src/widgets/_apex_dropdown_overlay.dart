@@ -79,6 +79,7 @@ class _ApexDropdownOverlayState<T> extends State<ApexDropdownOverlay<T>>
   }
 
   String _safeLabel(T item) {
+    if (item == null) return '';
     try {
       return widget.itemLabel(item);
     } catch (_) {

@@ -19,7 +19,7 @@ class ApexAsyncDropdown<T> extends StatelessWidget {
   /// This widget currently renders a placeholder (disabled) field while the full
   /// async overlay implementation is still in progress.
   const ApexAsyncDropdown({
-    required this.itemLabel,
+    this.itemLabel,
     required this.queryFn,
     required this.onChanged,
     this.value,
@@ -44,7 +44,11 @@ class ApexAsyncDropdown<T> extends StatelessWidget {
     super.key,
   });
 
-  final String Function(T) itemLabel;
+  /// Converts an item to the string shown in the closed field and overlay.
+  ///
+  /// If omitted, the widget falls back to `item.toString()` (and uses an empty
+  /// string for `null` items).
+  final String Function(T)? itemLabel;
   final Future<List<T>> Function(String query) queryFn;
   final ValueChanged<T?> onChanged;
 

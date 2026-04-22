@@ -75,7 +75,7 @@ class ApexDropdownList<T> extends StatelessWidget {
               minVerticalPadding: 0,
               contentPadding: decoration.itemPadding,
               title: Text(
-                itemLabel(item),
+                item == null ? '' : itemLabel(item),
                 style: itemStyle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

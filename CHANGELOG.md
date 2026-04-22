@@ -1,6 +1,7 @@
-## 1.0.4 - 2026-04-22
+## 1.0.5 - 2026-04-22
 
 - **UI**: Reduce the default closed-field height from 48 → 46 (applies to dropdown widgets and their `FormField` variants).
+- **API**: Make `itemLabel` optional across dropdowns and form fields; defaults to `toString()` for model types (and safely renders `''` for null items).
 - **Docs**: Improve public API documentation coverage (adds missing DartDoc for `apex_dropdown` exports and `ApexAsyncDropdown` members).
 
 ## 1.0.0
