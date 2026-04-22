@@ -1,6 +1,6 @@
-## 1.0.3 - 2026-04-22
+## 1.0.4 - 2026-04-22
 
-- **UI**: Reduce default closed-field height from 48 → 46 (applies to dropdowns and form-field variants).
+- **UI**: Reduce the default closed-field height from 48 → 46 (applies to dropdown widgets and their `FormField` variants).
 - **Docs**: Improve public API documentation coverage (adds missing DartDoc for `apex_dropdown` exports and `ApexAsyncDropdown` members).
 
 ## 1.0.0
@@ -14,4 +14,4 @@ Initial release of `apex_dropdown`.
 - **Lifecycle safety**: overlay is removed on `dispose()` and dismissed on route pop (prevents setState-after-dispose / orphaned overlays).
 
 Notes:
-- `ApexAsyncDropdown<T>` and `ApexMultiDropdown<T>` APIs are present but their full implementations will land in a follow-up release.
+- `ApexAsyncDropdown<T>` is exported for API stability but currently renders placeholder UI while the full async implementation is in progress.

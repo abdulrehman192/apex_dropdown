@@ -22,7 +22,7 @@ Add the dependency to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  apex_dropdown: ^1.0.3
+  apex_dropdown: ^1.0.4
 ```
 
 ```bash
