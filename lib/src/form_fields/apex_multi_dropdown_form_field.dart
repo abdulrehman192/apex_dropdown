@@ -5,6 +5,9 @@ import '../models/decoration.dart';
 import '../widgets/apex_multi_dropdown.dart';
 import '_merge_form_field_decoration.dart';
 
+/// A `FormField<List<T>>` wrapper around [ApexMultiDropdown].
+///
+/// Use this when integrating multi-select with `Form`, `validator`, and `onSaved`.
 class ApexMultiDropdownFormField<T> extends FormField<List<T>> {
   ApexMultiDropdownFormField({
     required List<T> items,

@@ -6,6 +6,10 @@ import '../utils/dropdown_utils.dart';
 import '_apex_dropdown_field.dart';
 import '_apex_dropdown_overlay.dart';
 
+/// Single-select dropdown with an overlay list and optional in-overlay search.
+///
+/// The widget is controllerless: provide [value] and update it in [onChanged].
+/// For model objects, provide [compareFn] so selection survives item refreshes.
 class ApexDropdown<T> extends StatefulWidget {
   const ApexDropdown({
     required this.items,

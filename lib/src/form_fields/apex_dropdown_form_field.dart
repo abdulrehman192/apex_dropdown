@@ -4,6 +4,9 @@ import '../models/decoration.dart';
 import '../widgets/apex_dropdown.dart';
 import '_merge_form_field_decoration.dart';
 
+/// A `FormField<T>` wrapper around [ApexDropdown].
+///
+/// Use this when integrating with `Form`, `validator`, and `onSaved`.
 class ApexDropdownFormField<T> extends FormField<T> {
   ApexDropdownFormField({
     required List<T> items,

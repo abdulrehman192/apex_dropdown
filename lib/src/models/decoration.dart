@@ -5,6 +5,11 @@ typedef ApexIndicatorBuilder = Widget Function(
   bool selected,
 );
 
+/// Visual configuration for dropdown fields and their overlay lists.
+///
+/// Pass an instance to `decoration:` on `ApexDropdown` / `ApexMultiDropdown` (or
+/// their form field variants) to customize colors, typography, padding, and
+/// overlay geometry.
 class ApexDropdownDecoration {
   const ApexDropdownDecoration({
     this.borderColor,

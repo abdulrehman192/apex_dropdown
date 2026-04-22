@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 import '../models/cache_policy.dart';
 import '../models/decoration.dart';
 
+/// Async/search dropdown that loads options from a query function.
+///
+/// Provide:
+/// - [queryFn] to fetch options for a query string
+/// - [itemLabel] to render each option as text
+/// - [onChanged] to receive the selected value (or `null`)
+///
+/// Note: this widget is currently a **placeholder UI** (exported for API
+/// stability). A full implementation (debounce, caching, and overlay list)
+/// is planned.
 class ApexAsyncDropdown<T> extends StatelessWidget {
   const ApexAsyncDropdown({
     required this.itemLabel,
@@ -52,7 +62,13 @@ class ApexAsyncDropdown<T> extends StatelessWidget {
   final bool retryEnabled;
   final String retryLabel;
 
+  /// Cache strategy for results returned by [queryFn].
+  ///
+  /// Use [ApexDropdownCachePolicy.none] for always-live queries, or an in-memory
+  /// policy to reduce network usage for repeated searches.
   final ApexDropdownCachePolicy cachePolicy;
+
+  /// Optional time-to-live for cached results when using a TTL cache policy.
   final Duration? cacheTtl;
 
   final ValueChanged<bool>? onOpenChanged;
