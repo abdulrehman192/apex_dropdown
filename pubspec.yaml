@@ -1,6 +1,6 @@
 name: apex_dropdown
 description: Apex-quality dropdown widgets for Flutter - controllerless, crash-proof, and memory-safe. Single, multi, and async search support with full model object handling.
-version: 1.0.5
+version: 1.0.6
 homepage: https://github.com/abdulrehman192/apex_dropdown
 repository: https://github.com/abdulrehman192/apex_dropdown
 issue_tracker: https://github.com/abdulrehman192/apex_dropdown/issues

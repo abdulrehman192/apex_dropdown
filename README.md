@@ -2,6 +2,8 @@
 
 Single- and **multi-select** dropdown widgets for Flutter with a **controllerless** API, **safe handling of stale values**, **optional in-overlay search**, and **adaptive overlay placement** (opens upward when there is not enough room below). The package avoids common production issues such as crashes when the current selection is missing from `items` after a refresh, and ensures the overlay is torn down on dispose and route pop.
 
+![Example](example.gif)
+
 ## Features
 
 | Feature | Status |
@@ -14,7 +16,8 @@ Single- and **multi-select** dropdown widgets for Flutter with a **controllerles
 | `ApexMultiDropdown<T>` — multi select, chips or count summary, `maxSelection` | Supported |
 | `ApexMultiDropdownFormField<T>` — multi `FormField` + validation | Supported |
 | Adaptive vertical placement + clamped panel height (keyboard / safe area) | Supported |
-| `ApexAsyncDropdown<T>` (and form field) | Stub / planned |
+| `ApexAsyncDropdown<T>` (and form field) | Supported |
+| `ApexAsyncMultiDropdown<T>` (and form field) | Supported |
 
 ## Installation
 
@@ -22,7 +25,7 @@ Add the dependency to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  apex_dropdown: ^1.0.5
+  apex_dropdown: ^1.0.6
 ```
 
 ```bash
@@ -308,11 +311,59 @@ By default, all dropdowns (single + multi, field + list items) use **font size 1
 
 ## Planned (stub in repo)
 
-`ApexAsyncDropdown` and `ApexAsyncDropdownFormField` are exported for API stability but currently show placeholder UI.
+Async dropdowns are supported via:
+
+- `ApexAsyncDropdown<T>` / `ApexAsyncDropdownFormField<T>`
+- `ApexAsyncMultiDropdown<T>` / `ApexAsyncMultiDropdownFormField<T>`
+
+## `ApexAsyncDropdown<T>`
+
+Use when your option list comes from an API (or any async source). The overlay includes a search box; typing triggers [queryFn] with debouncing, and results can be cached in-memory.
+
+```dart
+class City {
+  City({required this.id, required this.name});
+  final int id;
+  final String name;
+}
+
+City? selected;
+
+Future<List<City>> queryCities(String q) async {
+  // Call your API here.
+  return [];
+}
+
+ApexAsyncDropdown<City>(
+  queryFn: queryCities,
+  value: selected,
+  itemLabel: (c) => c.name,
+  compareFn: (a, b) => a.id == b.id,
+  hintText: 'Search city',
+  cachePolicy: ApexDropdownCachePolicy.memoryPerSession,
+  onChanged: (v) => setState(() => selected = v),
+);
+```
+
+## `ApexAsyncMultiDropdown<T>`
+
+Multi-select variant of the async dropdown.
+
+```dart
+List<City> selectedCities = [];
+
+ApexAsyncMultiDropdown<City>(
+  queryFn: queryCities,
+  values: selectedCities,
+  itemLabel: (c) => c.name,
+  compareFn: (a, b) => a.id == b.id,
+  chipDisplay: ApexDropdownChipDisplay.chips,
+  hintText: 'Search cities',
+  onChanged: (v) => setState(() => selectedCities = v),
+);
+```
 
 ## Links
 
-- **Repository**: `https://github.com/yourusername/apex_dropdown`
-- **Issues**: `https://github.com/yourusername/apex_dropdown/issues`
-
-Update these URLs to your real repository before publishing.
+- **Repository**: `https://github.com/abdulrehman192/apex_dropdown`
+- **Issues**: `https://github.com/abdulrehman192/apex_dropdown/issues`

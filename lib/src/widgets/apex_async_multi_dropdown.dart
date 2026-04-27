@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 
 import '../models/cache_policy.dart';
+import '../models/chip_display.dart';
 import '../models/decoration.dart';
 import '../utils/dropdown_utils.dart';
 import '_apex_async_dropdown_overlay.dart';
-import '_apex_dropdown_field.dart';
+import '_apex_multi_dropdown_field.dart';
 
-/// Async/search dropdown that loads options from a query function.
+/// Multi-select async dropdown.
 ///
-/// Provide:
-/// - [queryFn] to fetch options for a query string
-/// - [itemLabel] to render each option as text
-/// - [onChanged] to receive the selected value (or `null`)
-///
-/// The overlay includes an always-on search box. Input is debounced by
-/// [debounce], and results can be cached in-memory via [cachePolicy].
-class ApexAsyncDropdown<T> extends StatefulWidget {
-  /// Creates an async/search dropdown.
-  const ApexAsyncDropdown({
+/// Similar to [ApexMultiDropdown] but loads options using [queryFn]. Rows toggle
+/// selection without closing the overlay.
+class ApexAsyncMultiDropdown<T> extends StatefulWidget {
+  const ApexAsyncMultiDropdown({
     this.itemLabel,
     required this.queryFn,
     required this.onChanged,
-    this.value,
+    this.values = const [],
     this.compareFn,
+    this.maxSelection,
+    this.onSelectionLimitReached,
+    this.preserveStaleValues = false,
     this.initialItems = const [],
     this.debounce = const Duration(milliseconds: 300),
     this.minQueryLength = 0,
@@ -30,6 +28,7 @@ class ApexAsyncDropdown<T> extends StatefulWidget {
     this.hintText,
     this.enabled = true,
     this.decoration,
+    this.chipDisplay = ApexDropdownChipDisplay.count,
     this.loadingBuilder,
     this.errorBuilder,
     this.emptyBuilder,
@@ -43,76 +42,56 @@ class ApexAsyncDropdown<T> extends StatefulWidget {
     super.key,
   });
 
-  /// Converts an item to the string shown in the closed field and overlay.
-  ///
-  /// If omitted, the widget falls back to `item.toString()` (and uses an empty
-  /// string for `null` items).
   final String Function(T)? itemLabel;
 
   /// Fetches options for the current search query.
-  ///
-  /// The widget calls this after debouncing. When the user types quickly,
-  /// only the latest in-flight request is allowed to update the UI (last-query-wins).
   final Future<List<T>> Function(String query) queryFn;
 
-  /// Called with the selected value.
-  final ValueChanged<T?> onChanged;
+  /// Called with the updated selection list after each toggle/remove.
+  final ValueChanged<List<T>> onChanged;
 
-  final T? value;
+  final List<T> values;
 
-  /// Compares two values for equality (for model objects, compare by ID).
+  /// Compares values for identity (recommended for model objects).
   final bool Function(T a, T b)? compareFn;
 
-  /// Seed list shown before the first query completes.
+  final int? maxSelection;
+
+  /// Called when the user attempts to select more than [maxSelection].
+  final VoidCallback? onSelectionLimitReached;
+  final bool preserveStaleValues;
+
   final List<T> initialItems;
-
-  /// Delay between user input changes and calling [queryFn].
   final Duration debounce;
-
-  /// Minimum query length required before [queryFn] is invoked.
   final int minQueryLength;
-
-  /// Optional cap for results displayed in the overlay.
   final int? maxResults;
 
   final String? hintText;
   final bool enabled;
-
-  /// Visual configuration for the closed field and overlay list.
   final ApexDropdownDecoration? decoration;
+  final ApexDropdownChipDisplay chipDisplay;
 
   final WidgetBuilder? loadingBuilder;
-
-  /// Build an error UI. Receives the error and a retry callback.
   final Widget Function(Object error, VoidCallback retry)? errorBuilder;
-
-  /// Build an "empty results" UI when no items are returned.
   final WidgetBuilder? emptyBuilder;
   final bool retryEnabled;
   final String retryLabel;
 
-  /// Cache strategy for results returned by [queryFn].
-  ///
-  /// Use [ApexDropdownCachePolicy.none] for always-live queries, or an in-memory
-  /// policy to reduce network usage for repeated searches.
   final ApexDropdownCachePolicy cachePolicy;
-
-  /// Optional time-to-live for cached results when using a TTL cache policy.
   final Duration? cacheTtl;
 
   final ValueChanged<bool>? onOpenChanged;
-
-  /// Called when the overlay is dismissed after being opened.
   final VoidCallback? onDismissed;
 
   /// Debug callback for handling invalid values (kept for API compatibility).
   final ValueChanged<T>? onInvalidValue;
 
   @override
-  State<ApexAsyncDropdown<T>> createState() => _ApexAsyncDropdownState<T>();
+  State<ApexAsyncMultiDropdown<T>> createState() =>
+      _ApexAsyncMultiDropdownState<T>();
 }
 
-class _ApexAsyncDropdownState<T> extends State<ApexAsyncDropdown<T>> {
+class _ApexAsyncMultiDropdownState<T> extends State<ApexAsyncMultiDropdown<T>> {
   final LayerLink _link = LayerLink();
   final GlobalKey _fieldKey = GlobalKey();
   OverlayEntry? _entry;
@@ -129,13 +108,23 @@ class _ApexAsyncDropdownState<T> extends State<ApexAsyncDropdown<T>> {
     }
   }
 
+  void _scheduleOverlayRebuild() {
+    if (!_open || _entry == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _open && _entry != null) _entry!.markNeedsBuild();
+    });
+  }
+
   @override
-  void didUpdateWidget(covariant ApexAsyncDropdown<T> oldWidget) {
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant ApexAsyncMultiDropdown<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_open && _entry != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _open && _entry != null) _entry!.markNeedsBuild();
-      });
+    if (!identical(oldWidget.values, widget.values)) {
+      _scheduleOverlayRebuild();
     }
   }
 
@@ -158,15 +147,12 @@ class _ApexAsyncDropdownState<T> extends State<ApexAsyncDropdown<T>> {
           placement: placement,
           fieldWidth: fieldWidth,
           decoration: widget.decoration ?? const ApexDropdownDecoration(),
-          value: widget.value,
-          values: const [],
+          value: null,
+          values: widget.values,
           compareFn: widget.compareFn,
           itemLabel: _safeItemLabel,
           queryFn: widget.queryFn,
-          onSelect: (item) {
-            widget.onChanged(item);
-            _close();
-          },
+          onSelect: _onOverlayToggle,
           onDismiss: () => _close(),
           debounce: widget.debounce,
           minQueryLength: widget.minQueryLength,
@@ -179,7 +165,7 @@ class _ApexAsyncDropdownState<T> extends State<ApexAsyncDropdown<T>> {
           retryLabel: widget.retryLabel,
           cachePolicy: widget.cachePolicy,
           cacheTtl: widget.cacheTtl,
-          multiSelect: false,
+          multiSelect: true,
         );
       },
     );
@@ -187,6 +173,57 @@ class _ApexAsyncDropdownState<T> extends State<ApexAsyncDropdown<T>> {
     overlay.insert(_entry!);
     setState(() => _open = true);
     widget.onOpenChanged?.call(true);
+  }
+
+  void _onOverlayToggle(T item) {
+    final current = List<T>.from(widget.values);
+    bool selected = false;
+    for (final v in current) {
+      final eq = widget.compareFn;
+      if (eq != null ? eq(v, item) : v == item) {
+        selected = true;
+        break;
+      }
+    }
+    if (selected) {
+      widget.onChanged(
+        current
+            .where(
+              (v) => !(widget.compareFn != null
+                  ? widget.compareFn!(v, item)
+                  : v == item),
+            )
+            .toList(),
+      );
+    } else {
+      final max = widget.maxSelection;
+      if (max != null && current.length >= max) {
+        widget.onSelectionLimitReached?.call();
+        return;
+      }
+      widget.onChanged([...current, item]);
+    }
+    _scheduleOverlayRebuild();
+  }
+
+  void _onRemoveChip(T item) {
+    widget.onChanged(
+      widget.values
+          .where(
+            (v) => !(widget.compareFn != null
+                ? widget.compareFn!(v, item)
+                : v == item),
+          )
+          .toList(),
+    );
+    _scheduleOverlayRebuild();
+  }
+
+  List<T> _displayValues() {
+    if (widget.preserveStaleValues) return List<T>.from(widget.values);
+    // In async mode, we cannot reliably normalize against the latest remote
+    // option list, so we preserve the provided values.
+    return List<T>.from(widget.values);
   }
 
   void _close({bool notify = true}) {
@@ -220,20 +257,21 @@ class _ApexAsyncDropdownState<T> extends State<ApexAsyncDropdown<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final v = widget.value;
-    final text = v == null ? null : _safeItemLabel(v);
     return PopScope<Object?>(
       canPop: true,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) _close(notify: false);
       },
-      child: ApexDropdownField(
+      child: ApexMultiDropdownField<T>(
         link: _link,
-        text: text,
+        displayValues: _displayValues(),
+        itemLabel: widget.itemLabel,
+        chipDisplay: widget.chipDisplay,
         hintText: widget.hintText,
         enabled: widget.enabled,
         isOpen: _open,
         onTap: _toggle,
+        onRemove: _onRemoveChip,
         decoration: widget.decoration,
         containerKey: _fieldKey,
       ),

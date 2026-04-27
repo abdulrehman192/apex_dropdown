@@ -1,3 +1,10 @@
+## 1.0.6 - 2026-04-27
+
+- **Feature**: Implement `ApexAsyncDropdown<T>` (real async overlay with debounce, last-query-wins, caching, and loading/error/empty states).
+- **Feature**: Add `ApexAsyncMultiDropdown<T>` + `ApexAsyncMultiDropdownFormField<T>`.
+- **UI**: Multi-select count mode now shows `"N selected"` even when the field has a fixed height.
+- **Example**: Add async single + multi dropdown demos to the example app.
+
 ## 1.0.5 - 2026-04-22
 
 - **UI**: Reduce the default closed-field height from 48 → 46 (applies to dropdown widgets and their `FormField` variants).

@@ -47,6 +47,8 @@ class _ApexDropdownExamplePageState extends State<ApexDropdownExamplePage> {
   Benefit? _selectedBenefit;
   List<String> _tags = const ['Dart'];
   List<Benefit> _benefits = const [];
+  Benefit? _asyncBenefit;
+  List<Benefit> _asyncBenefits = const [];
 
   final _countries = const ['UAE', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Bahrain'];
   final _allTags = const ['Dart', 'Flutter', 'Android', 'iOS', 'Web'];
@@ -57,6 +59,15 @@ class _ApexDropdownExamplePageState extends State<ApexDropdownExamplePage> {
     Benefit(id: 4, title: 'Medical'),
     Benefit(id: 5, title: 'Overtime'),
   ];
+
+  Future<List<Benefit>> _queryBenefits(String query) async {
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    final q = query.trim().toLowerCase();
+    final filtered = q.isEmpty
+        ? _allBenefits
+        : _allBenefits.where((b) => b.title.toLowerCase().contains(q)).toList();
+    return filtered;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +132,35 @@ class _ApexDropdownExamplePageState extends State<ApexDropdownExamplePage> {
                   chipDisplay: ApexDropdownChipDisplay.count,
                   searchEnabled: true,
                   onChanged: (v) => setState(() => _benefits = v),
+                ),
+              ),
+              const SizedBox(height: 14),
+              _Section(
+                title: 'Async single-select (model)',
+                subtitle: 'Loads results from a Future-backed query function.',
+                child: ApexAsyncDropdown<Benefit>(
+                  queryFn: _queryBenefits,
+                  value: _asyncBenefit,
+                  itemLabel: (b) => b.title,
+                  compareFn: (a, b) => a.id == b.id,
+                  hintText: 'Search benefit',
+                  minQueryLength: 0,
+                  initialItems: _allBenefits,
+                  onChanged: (v) => setState(() => _asyncBenefit = v),
+                ),
+              ),
+              const SizedBox(height: 14),
+              _Section(
+                title: 'Async multi-select (model) + chips',
+                child: ApexAsyncMultiDropdown<Benefit>(
+                  queryFn: _queryBenefits,
+                  values: _asyncBenefits,
+                  itemLabel: (b) => b.title,
+                  compareFn: (a, b) => a.id == b.id,
+                  hintText: 'Search benefits',
+                  chipDisplay: ApexDropdownChipDisplay.chips,
+                  initialItems: _allBenefits,
+                  onChanged: (v) => setState(() => _asyncBenefits = v),
                 ),
               ),
               const SizedBox(height: 14),

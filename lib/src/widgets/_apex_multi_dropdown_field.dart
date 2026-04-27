@@ -57,9 +57,21 @@ class ApexMultiDropdownField<T> extends StatelessWidget {
     late final Widget body;
     if (d.fieldHeight != null) {
       // Keep the closed field the same height as single-select by default.
-      // When constrained, render a single-line comma-separated summary.
+      // When constrained, prefer a stable one-line summary.
+      final String summary;
+      switch (chipDisplay) {
+        case ApexDropdownChipDisplay.count:
+          summary = showHint ? (hintText ?? '') : '$count selected';
+          break;
+        case ApexDropdownChipDisplay.chips:
+          summary = selectedText;
+          break;
+        case ApexDropdownChipDisplay.countAndChips:
+          summary = showHint ? (hintText ?? '') : '$count selected';
+          break;
+      }
       body = Text(
-        selectedText,
+        summary,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: showHint ? d.hintStyle : d.textStyle,
